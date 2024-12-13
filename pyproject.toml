@@ -9,14 +9,14 @@ readme = "README.md"
 python = "^3.12"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
 sqlalchemy = "^2.0.36"
-
+pydantic-settings = "^2.6.1"
+alembic = "^1.14.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
 taskipy = "^1.14.1"
-ruff = "^0.8.3"0
-
+ruff = "^0.8.3"
 
 [tool.ruff]
 line-length = 79
@@ -38,9 +38,9 @@ addopts = '-p no:warnings'
 [tool.taskipy.tasks]
 lint = 'ruff check .; ruff check . --diff'
 format = 'ruff check . --fix; ruff format .'
-run = 'fastapi dev fast_zero/app.py'
+run = 'fastapi dev salonsuite/app.py'
 pre_test = 'task lint'
-test = 'pytest -s -x --cov=fast_zero -vv'
+test = 'pytest -s -x --cov=salonsuite -vv'
 post_test = 'coverage html'
 
 [build-system]
