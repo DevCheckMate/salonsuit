@@ -13,7 +13,9 @@ class Users:
     users_id: Mapped[int] = mapped_column(init=False, primary_key=True)
     users_email: Mapped[str] = mapped_column(String(255), nullable=True)
     users_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    group_id: Mapped[int] = mapped_column(ForeignKey('user_group.user_group_id'), nullable=True)
+    group_id: Mapped[int] = mapped_column(
+        ForeignKey('user_group.user_group_id'), nullable=True
+    )
     users_cellphone: Mapped[str] = mapped_column(String(11), nullable=False)
     users_pin: Mapped[str] = mapped_column(String(11), nullable=False)
     users_password: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -22,7 +24,7 @@ class Users:
     users_gender: Mapped[str] = mapped_column(String(6), nullable=True)
     users_description: Mapped[str] = mapped_column(String(255), nullable=True)
     status_id: Mapped[int] = mapped_column(
-        ForeignKey('status.status_id'), nullable=False
+        ForeignKey('user_status.user_status_id'), nullable=False
     )
     users_image_url: Mapped[str] = mapped_column(String(255), nullable=True)
     users_created_at: Mapped[datetime] = mapped_column(

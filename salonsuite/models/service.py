@@ -1,6 +1,8 @@
 from datetime import datetime
-from sqlalchemy import String, func, ForeignKey
+
+from sqlalchemy import ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
+
 from salonsuite.database.orm_registry import table_mapper
 
 
@@ -16,10 +18,9 @@ class Service:
         ForeignKey('status.status_id'), nullable=False
     )
     service_category_id: Mapped[int] = mapped_column(
-        ForeignKey('service_category.service_category_id'), 
-        nullable=False
+        ForeignKey('service_category.service_category_id'), nullable=False
     )
-    created_at:Mapped[datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(

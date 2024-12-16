@@ -1,8 +1,8 @@
-"""criacao_das_tabelas_iniciais_users_e_user_groups
+"""Criando tabelas iniciais, tabela users, user_group e user_status 
 
-Revision ID: 87c9e1a4230a
-Revises: 2a00ef078ca5
-Create Date: 2024-12-16 15:46:30.966383
+Revision ID: da7e1e84a88d
+Revises: 
+Create Date: 2024-12-16 16:04:46.066978
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '87c9e1a4230a'
-down_revision: Union[str, None] = '2a00ef078ca5'
+revision: str = 'da7e1e84a88d'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -32,6 +32,14 @@ def upgrade() -> None:
     sa.Column('user_group_updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('user_group_deleted_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('user_group_id')
+    )
+    op.create_table('user_status',
+    sa.Column('user_status_id', sa.Integer(), nullable=False),
+    sa.Column('user_status_name', sa.String(length=100), nullable=False),
+    sa.Column('user_status_created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('user_status_updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('user_status_deleted_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('user_status_id')
     )
     op.create_table('service_category',
     sa.Column('service_category_id', sa.Integer(), nullable=False),
@@ -61,7 +69,7 @@ def upgrade() -> None:
     sa.Column('users_update_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('users_deleted_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['group_id'], ['user_group.user_group_id'], ),
-    sa.ForeignKeyConstraint(['status_id'], ['status.status_id'], ),
+    sa.ForeignKeyConstraint(['status_id'], ['user_status.user_status_id'], ),
     sa.PrimaryKeyConstraint('users_id')
     )
     op.create_table('service',
@@ -86,6 +94,7 @@ def downgrade() -> None:
     op.drop_table('service')
     op.drop_table('users')
     op.drop_table('service_category')
+    op.drop_table('user_status')
     op.drop_table('user_group')
     op.drop_table('status')
     # ### end Alembic commands ###
