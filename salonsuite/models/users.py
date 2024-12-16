@@ -13,7 +13,7 @@ class Users:
     users_id: Mapped[int] = mapped_column(init=False, primary_key=True)
     users_email: Mapped[str] = mapped_column(String(255), nullable=True)
     users_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    group_id: Mapped[int] = mapped_column(nullable=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey('user_group.user_group_id'), nullable=True)
     users_cellphone: Mapped[str] = mapped_column(String(11), nullable=False)
     users_pin: Mapped[str] = mapped_column(String(11), nullable=False)
     users_password: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -32,4 +32,3 @@ class Users:
         init=False, server_default=func.now(), onupdate=func.now()
     )
     users_deleted_at: Mapped[datetime] = mapped_column(nullable=True)
-    
