@@ -11,7 +11,6 @@ class EnterPrise:
     __tablename__ = "enterprise"
 
     enterprise_id : Mapped[int] = mapped_column(init=False, primary_key=True)
-    status_id : Mapped[int] = mapped_column(ForeignKey('status.status_id'), nullable=False, default=Status.ATIVO.value)
     name : Mapped[str] = mapped_column(String(100), nullable=False)
     cnpj : Mapped[str] = mapped_column(String(14), nullable=False)
     cellphone : Mapped[str] = mapped_column(String(11), nullable=False, unique=True)
@@ -19,6 +18,10 @@ class EnterPrise:
     state : Mapped[str] = mapped_column(String(100), nullable=False)
     city : Mapped[str] = mapped_column(String(100), nullable=False)
     cep : Mapped[str] = mapped_column(String(8), nullable=False)
-    created_at : Mapped[datetime] = mapped_column(init= False, server_default=func.now())
-    updated_at : Mapped[datetime] = mapped_column(init=False, server_default=func.now(), onupdate=func.now())
+    status_id : Mapped[int] = mapped_column(ForeignKey('status.status_id'), 
+                                            nullable=False, 
+                                            default=Status.ATIVO.value)
     deleted_at : Mapped[Optional[str]] = mapped_column(nullable=True, default=None)
+    created_at : Mapped[datetime] = mapped_column(init= False, server_default=func.now())
+    updated_at : Mapped[datetime] = mapped_column(init=False, server_default=func.now(), 
+                                                  onupdate=func.now())
