@@ -8,7 +8,7 @@ from salonsuite.utils.enum import Status
 
 @table_mapper.mapped_as_dataclass
 class EnterPrise:
-    __tablename__ = "enterprise"
+    __tablename__ = 'enterprise'
 
     enterprise_id : Mapped[int] = mapped_column(init=False, primary_key=True)
     name : Mapped[str] = mapped_column(String(100), nullable=False)
