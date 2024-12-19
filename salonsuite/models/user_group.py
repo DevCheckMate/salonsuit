@@ -20,5 +20,5 @@ class UserGroup:
         init=False, server_default=func.now(), onupdate=func.now()
     )
     deleted_at: Mapped[Optional[datetime]] = mapped_column(
-        nullable=False, default=None
+        nullable=True, default=None
     )

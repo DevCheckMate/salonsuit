@@ -5,4 +5,11 @@ from .user_group import UserGroup
 from .user_status import UserStatus
 from .users import Users
 
-__all__ = ['ServiceCategory', 'Service', 'Status', 'UserGroup', 'UserStatus', 'Users']
+__all__ = [
+    'ServiceCategory',
+    'Service',
+    'Status',
+    'UserGroup',
+    'UserStatus',
+    'Users',
+]
