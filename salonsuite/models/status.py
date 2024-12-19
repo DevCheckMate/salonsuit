@@ -10,4 +10,3 @@ class Status:
 
     status_id: Mapped[int] = mapped_column(init=False, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
-   
