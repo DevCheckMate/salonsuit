@@ -12,7 +12,7 @@ class EnterPrise:
 
     enterprise_id : Mapped[int] = mapped_column(init=False, primary_key=True)
     name : Mapped[str] = mapped_column(String(100), nullable=False)
-    cnpj : Mapped[str] = mapped_column(String(14), nullable=False)
+    cnpj : Mapped[str] = mapped_column(String(14), nullable=False, unique=True)
     cellphone : Mapped[str] = mapped_column(String(11), nullable=False, unique=True)
     email : Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     state : Mapped[str] = mapped_column(String(100), nullable=False)
