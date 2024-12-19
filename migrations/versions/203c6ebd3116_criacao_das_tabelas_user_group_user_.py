@@ -1,8 +1,8 @@
 """criacao_das_tabelas_user_group_user_status_e_users
 
-Revision ID: 1eac4dddb829
+Revision ID: 203c6ebd3116
 Revises: 4fb68ce8225a
-Create Date: 2024-12-19 08:47:26.072655
+Create Date: 2024-12-19 18:02:16.142823
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1eac4dddb829'
+revision: str = '203c6ebd3116'
 down_revision: Union[str, None] = '4fb68ce8225a'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -70,7 +70,11 @@ def upgrade() -> None:
     sa.Column('deleted_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['group_id'], ['user_group.user_group_id'], ),
     sa.ForeignKeyConstraint(['status_id'], ['user_status.user_status_id'], ),
-    sa.PrimaryKeyConstraint('users_id')
+    sa.PrimaryKeyConstraint('users_id'),
+    sa.UniqueConstraint('cellphone'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('password'),
+    sa.UniqueConstraint('pin')
     )
     op.create_table('service',
     sa.Column('service_id', sa.Integer(), nullable=False),
