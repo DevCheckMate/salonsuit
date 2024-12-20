@@ -8,18 +8,8 @@ from salonsuite.models.user_status import UserStatus
 from salonsuite.models.users import Users
 
 
-def seed_users():
+def seed_user():
     with Session(engine) as session:
-        user_status = [UserStatus(name='ATIVO'), UserStatus(name='INATIVO')]
-
-        user_group = [
-            UserGroup(name='Proprietario'),
-            UserGroup(name='Funcionarios'),
-            UserGroup(name='Clientes'),
-            UserGroup(name='Fornecedores'),
-            UserGroup(name='Gerentes'),
-        ]
-
         users = [
             Users(
                 image_url='https://example.com/image1.jpg',
@@ -62,13 +52,8 @@ def seed_users():
             ),
         ]
 
-        session.add_all(user_status)
-        session.commit()
-        session.add_all(user_group)
-        session.commit()
         session.add_all(users)
         session.commit()
 
-
 if __name__ == '__main__':
-    seed_users()
+    seed_user()

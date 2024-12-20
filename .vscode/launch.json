@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug FastAPI - SalonSuite",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": [
+          "salonsuite.app:app",  // Substitua aqui pelo caminho correto do seu app
+          "--reload",
+          "--port", "8002"       // Define a porta para 8001
+        ],
+        "jinja": true,
+        "justMyCode": true,
+        "console": "integratedTerminal"
+      }
+    ]
+}
