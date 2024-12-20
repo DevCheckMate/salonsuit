@@ -2,21 +2,11 @@ from sqlalchemy.orm import Session
 
 from salonsuite.database.db_connection import engine
 from salonsuite.models.service import Service
-from salonsuite.models.service_category import ServiceCategory
-from salonsuite.models.status import Status
 
 
-def seed_services():
-    # Adicionar Dados da Tabela Status
+def seed_service():
     with Session(engine) as session:
-        status = [Status(name='ATIVO'), Status(name='INATIVO')]
-
-        services_category = [
-            ServiceCategory(name='Cortes Masculinos'),
-            ServiceCategory(name='Barba'),
-            ServiceCategory(name='Cortes Femininos'),
-        ]
-
+     
         services = [
             Service(name='Taper', value=100, time=30, service_category_id=1),
             Service(
@@ -44,10 +34,6 @@ def seed_services():
             Service(name='Chanel', value=350, time=30, service_category_id=3),
         ]
 
-        session.add_all(status)
-        session.commit()
-        session.add_all(services_category)
-        session.commit()
         session.add_all(services)
         session.commit()
 
@@ -55,4 +41,4 @@ def seed_services():
 
 
 if __name__ == '__main__':
-    seed_services()
+    seed_service()
