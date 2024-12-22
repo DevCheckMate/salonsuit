@@ -4,6 +4,7 @@ from .status import Status
 from .user_group import UserGroup
 from .user_status import UserStatus
 from .users import Users
+from .enterprise import EnterPrise
 
 __all__ = [
     'ServiceCategory',
@@ -12,4 +13,5 @@ __all__ = [
     'UserGroup',
     'UserStatus',
     'Users',
+    'EnterPrise'
 ]

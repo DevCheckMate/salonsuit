@@ -1,8 +1,8 @@
-"""criacao_das_tabelas_user_group_user_status_e_users
+"""criacao_das_tabelas
 
-Revision ID: 203c6ebd3116
-Revises: 4fb68ce8225a
-Create Date: 2024-12-19 18:02:16.142823
+Revision ID: f4f3326348da
+Revises: 
+Create Date: 2024-12-22 13:47:49.101464
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '203c6ebd3116'
-down_revision: Union[str, None] = '4fb68ce8225a'
+revision: str = 'f4f3326348da'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -40,6 +40,25 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('user_status_id')
+    )
+    op.create_table('enterprise',
+    sa.Column('enterprise_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('cnpj', sa.String(length=14), nullable=False),
+    sa.Column('cellphone', sa.String(length=11), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('state', sa.String(length=100), nullable=False),
+    sa.Column('city', sa.String(length=100), nullable=False),
+    sa.Column('cep', sa.String(length=8), nullable=False),
+    sa.Column('status_id', sa.Integer(), nullable=False),
+    sa.Column('deleted_at', sa.String(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.ForeignKeyConstraint(['status_id'], ['status.status_id'], ),
+    sa.PrimaryKeyConstraint('enterprise_id'),
+    sa.UniqueConstraint('cellphone'),
+    sa.UniqueConstraint('cnpj'),
+    sa.UniqueConstraint('email')
     )
     op.create_table('service_category',
     sa.Column('service_category_id', sa.Integer(), nullable=False),
@@ -98,6 +117,7 @@ def downgrade() -> None:
     op.drop_table('service')
     op.drop_table('users')
     op.drop_table('service_category')
+    op.drop_table('enterprise')
     op.drop_table('user_status')
     op.drop_table('user_group')
     op.drop_table('status')
