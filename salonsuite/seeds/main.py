@@ -7,6 +7,7 @@ from salonsuite.seeds.user_status import seed_user_status
 from salonsuite.seeds.users_seed import seed_user
 from salonsuite.seeds.service_category import seed_service_category
 from salonsuite.seeds.service_seed import seed_service
+from salonsuite.seeds.enterprise_seed import seed_enterprise
 
 def clear_all_tables():
     with Session(engine) as session:
@@ -45,5 +46,6 @@ if __name__ == '__main__':
     seed_user()
     seed_service_category()
     seed_service()
+    seed_enterprise()
     print("Concluído com Sucesso!!!")
     
