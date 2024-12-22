@@ -6,7 +6,6 @@ from salonsuite.models.service import Service
 
 def seed_service():
     with Session(engine) as session:
-     
         services = [
             Service(name='Taper', value=100, time=30, service_category_id=1),
             Service(

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+
 from salonsuite.database.db_connection import engine
 from salonsuite.models.service_category import ServiceCategory
 
@@ -12,7 +13,6 @@ def seed_service_category():
         ]
         session.add_all(services_category)
         session.commit()
-        
 
     ...
 

@@ -3,8 +3,6 @@ from datetime import date
 from sqlalchemy.orm import Session
 
 from salonsuite.database.db_connection import engine
-from salonsuite.models.user_group import UserGroup
-from salonsuite.models.user_status import UserStatus
 from salonsuite.models.users import Users
 
 
@@ -54,6 +52,7 @@ def seed_user():
 
         session.add_all(users)
         session.commit()
+
 
 if __name__ == '__main__':
     seed_user()
