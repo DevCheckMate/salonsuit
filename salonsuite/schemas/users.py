@@ -9,8 +9,8 @@ class UsersSchemaPublic(BaseModel):
     image_url: Optional[str]
     email: Optional[str]
     name: str
-    group_id: Optional[int]
-    group_name: Optional[str]
+    group_id: int
+    group_name: str
     cellphone: str
     pin: str
     password: str
@@ -19,5 +19,5 @@ class UsersSchemaPublic(BaseModel):
     gender: Optional[str]
     description: Optional[str]
     status_id: int
-    status_name: Optional[str]
+    status_name: str
     created_at: datetime
