@@ -34,6 +34,7 @@ def seed_user():
                 instagram=None,
                 gender='Male',
                 description='Segundo usuario criado',
+                status_id=3,
             ),
             Users(
                 image_url='https://example.com/image2.jpg',
@@ -47,6 +48,20 @@ def seed_user():
                 instagram=None,
                 gender='Male',
                 description='Terceiro usuario criado',
+            ),
+            Users(
+                image_url=None,
+                email='maria_alice@example.com',
+                name='Maria Alice',
+                group_id=2,
+                cellphone='997854258',
+                pin='03185414797',
+                password='54321',
+                birthdate=None,
+                instagram=None,
+                gender=None,
+                description=None,
+                status_id=4,
             ),
         ]
 
