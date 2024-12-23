@@ -11,7 +11,7 @@ from salonsuite.schemas.enterprise import EnterPriseSchemaPublic
 router = APIRouter()
 
 
-@router.get('/{enterprise_id}')
+@router.get('/{enterprise_id}', response_model=EnterPriseSchemaPublic)
 def get_enterprise_by_id(
     enterprise_id: int, session: Session = Depends(get_session)
 ):
