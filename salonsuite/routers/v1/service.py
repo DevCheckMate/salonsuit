@@ -7,53 +7,68 @@ from salonsuite.database.db_connection import get_session
 from salonsuite.models.service import Service
 from salonsuite.models.service_category import ServiceCategory
 from salonsuite.models.status import Status
-from salonsuite.schemas.services import ServiceSchemaPublic
+from salonsuite.schemas.services import ServiceSchemaPublic, ServiceCreateSchema
 
 
 router = APIRouter()
 
 
 @router.get('/{service_id}', response_model=ServiceSchemaPublic)
-def get_service_by_id(
-    service_id: int, session: Session = Depends(get_session)
-):
-    """
-    Abaixo é o mesmo que:
-    Select * from service where service_id = 1
-    """
-
+def get_service_by_id(service_id: int, session: Session = Depends(get_session)):
     stmt = (
         select(
-            Service.service_id,
-            Service.name,
-            Service.value,
-            Service.time,
-            Service.service_category_id,
-            Service.status_id,
-            Service.created_at,
-            ServiceCategory.name.label("service_category_name"),
-            Status.name.label("status_name")
+            Service.name.label('service'), 
+            Service.value.label('price'), 
+            Service.time.label('service_time'), 
+            Status.name.label('status'), 
+            ServiceCategory.name.label('category')
         )
-        .join(ServiceCategory, 
-              Service.service_category_id == ServiceCategory.service_category_id)
-        .join(Status, Service.status_id == Status.status_id)
-        .where(Service.service_id == service_id)    
+        .join(Status, Status.status_id == Service.status_id)
+        .join(ServiceCategory, ServiceCategory.service_category_id == Service.service_category_id)
+        .where(Service.service_id == service_id)
     )
-    
-    service_db = session.execute(stmt).mappings().one_or_none()
+    service_db= session.execute(stmt).mappings().one_or_none()
 
     if not service_db:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, 
-            detail='Service not found'
+            status_code=HTTPStatus.NOT_FOUND,
+            detail='Service Not Found'
         )
 
-    '''
-    ServiceSchemaPublic(**service_db.__dict__)
-    Utiliza dessa forma acima quando o meu contrato(Schema) é exatamente as 
-    colunas da minha tabela.
-
-    '''
     data = ServiceSchemaPublic(**dict(service_db))
 
     return data
+
+@router.post('', response_model=ServiceSchemaPublic)
+def create_service(body: ServiceCreateSchema, session: Session = Depends(get_session)):
+    ...
+    new_service = Service(
+        name=body.service,
+        value=body.price,
+        time=body.service_time,
+        service_category_id=body.category,
+        status_id=body.status
+    )
+
+    session.add(new_service)
+    session.commit()
+    session.refresh(new_service)
+
+
+    stmt = (
+        select(
+            Service.name.label('service'), 
+            Service.value.label('price'), 
+            Service.time.label('service_time'), 
+            Status.name.label('status'), 
+            ServiceCategory.name.label('category')
+        )
+        .join(Status, Status.status_id == Service.status_id)
+        .join(ServiceCategory, ServiceCategory.service_category_id == Service.service_category_id)
+        .where(Service.service_id == new_service.service_id)
+    )
+
+    new_service_db= session.execute(stmt).mappings().one_or_none()
+    new_service_data = ServiceSchemaPublic(**dict(new_service_db))
+
+    return new_service_data
