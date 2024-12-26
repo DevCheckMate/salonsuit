@@ -1,11 +1,10 @@
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel
 
 
 class UsersSchemaPublic(BaseModel):
-    users_id: int
     image_url: Optional[str]
     email: Optional[str]
     name: str
@@ -20,4 +19,18 @@ class UsersSchemaPublic(BaseModel):
     description: Optional[str]
     status_id: int
     status_name: str
-    created_at: datetime
+
+
+class UsersCreateSchema(BaseModel):
+    image_url: Optional[str]
+    email: Optional[str]
+    name: str
+    group_id: int
+    cellphone: str
+    pin: str
+    password: str
+    birthdate: Optional[date]
+    instagram: Optional[str]
+    gender: Optional[str]
+    description: Optional[str]
+    status_id: int
