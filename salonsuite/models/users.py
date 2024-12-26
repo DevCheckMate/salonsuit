@@ -19,9 +19,13 @@ class Users:
     group_id: Mapped[int] = mapped_column(
         ForeignKey('user_group.user_group_id'), nullable=True
     )
-    cellphone: Mapped[str] = mapped_column(String(11), nullable=False, unique=True)
+    cellphone: Mapped[str] = mapped_column(
+        String(11), nullable=False, unique=True
+    )
     pin: Mapped[str] = mapped_column(String(11), nullable=False, unique=True)
-    password: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(
+        String(255), nullable=False, unique=True
+    )
     birthdate: Mapped[date] = mapped_column(nullable=True)
     instagram: Mapped[str] = mapped_column(String(100), nullable=True)
     gender: Mapped[str] = mapped_column(String(6), nullable=True)
