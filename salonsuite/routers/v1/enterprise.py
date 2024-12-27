@@ -105,3 +105,55 @@ def get_enterprise_by_id(
     data = EnterPriseSchemaPublic(**dict(enterprise_db))
 
     return data
+
+@router.put('/{enterprise_id}', response_model=EnterPriseSchemaPublic)
+def put_enterprise_by_id(
+    enterprise_id: int, body: EnterPriseCreatSchema, 
+    session: Session = Depends(get_session)
+):
+    stmt = select(EnterPrise).where(EnterPrise.enterprise_id == enterprise_id,
+                                    EnterPrise.status_id != EnumStatus.DELETADO.value
+                                    )
+    enterprise_db = session.execute(stmt).scalar_one_or_none()
+
+    if not enterprise_db:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='Enterprise Not Found'
+        )
+
+    enterprise_db.name = body.name
+    enterprise_db.cnpj = body.cnpj
+    enterprise_db.cellphone = body.cellphone
+    enterprise_db.email = body.email
+    enterprise_db.state = body.state
+    enterprise_db.city = body.city
+    enterprise_db.cep = body.cep
+    enterprise_db.status_id = body.status_id
+
+    session.commit()
+
+    stmt = (
+        select(
+            EnterPrise.enterprise_id,
+            EnterPrise.name,
+            EnterPrise.cnpj,
+            EnterPrise.cellphone,
+            EnterPrise.email,
+            EnterPrise.state,
+            EnterPrise.city,
+            EnterPrise.cep,
+            EnterPrise.status_id,
+            Status.name.label("status_name")
+        ).join(
+            Status, EnterPrise.status_id == Status.status_id
+        ).where(
+            EnterPrise.enterprise_id == enterprise_id,
+            EnterPrise.status_id != EnumStatus.DELETADO.value
+        )
+    )
+
+    enterprise_update_db = session.execute(stmt).mappings().one_or_none()
+
+    data = EnterPriseSchemaPublic(**dict(enterprise_update_db))
+
+    return data
