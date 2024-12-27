@@ -1,6 +1,3 @@
-Aqui está um exemplo de um arquivo `README.md` que explica como popular o banco de dados seguindo as instruções fornecidas:
-
-```markdown
 # Salonsuite
 
 Este é um projeto desenvolvido com [FastAPI](https://fastapi.tiangolo.com/) e [SQLAlchemy 2.0](https://docs.sqlalchemy.org/en/20/), utilizando o gerenciador de dependências [Poetry](https://python-poetry.org/).
