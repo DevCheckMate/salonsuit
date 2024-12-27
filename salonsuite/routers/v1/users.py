@@ -74,7 +74,6 @@ def create_user(
 
     stmt = (
         select(
-            Users.users_id,
             Users.image_url,
             Users.email,
             Users.name,
