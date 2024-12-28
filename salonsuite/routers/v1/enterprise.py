@@ -1,5 +1,7 @@
+from datetime import datetime
+from typing import List
 from http import HTTPStatus
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from salonsuite.models.status import Status
@@ -71,6 +73,65 @@ def create_enterprise(
     new_enterprise_data = EnterPriseSchemaPublic(**dict(new_enterprise_db))
 
     return new_enterprise_data
+
+@router.get('', response_model=List[EnterPriseSchemaPublic])
+def list_enterprises(
+    session: Session = Depends(get_session),
+    page : int = Query(default=1, ge=1, description="Número da página (começando de 1)"),
+    status: int = Query(default=1, description="Aceita 1 e 2"),
+    city : str = Query(default=None, description="Cidade"),
+    state : str = Query(default=None, description="Estado")
+):
+    if page <= 0:
+        page = 1
+    
+    limit = 3
+
+    offset = (page - 1) * limit
+
+    stmt = (
+        select(
+            EnterPrise.name,
+            EnterPrise.cnpj,
+            EnterPrise.cellphone,
+            EnterPrise.email,
+            EnterPrise.state,
+            EnterPrise.city,
+            EnterPrise.cep,
+            EnterPrise.status_id,
+            Status.name.label("status_name")
+        ).join(
+            Status, Status.status_id == EnterPrise.status_id
+        )
+    )
+
+    if status:
+        stmt = stmt.where(EnterPrise.status_id == status)
+    if city:
+        stmt = stmt.where(EnterPrise.city == city)
+    if state:
+        stmt = stmt.where(EnterPrise.state == state)
+
+    stmt = (
+        stmt.where(EnterPrise.status_id != EnumStatus.DELETADO.value)
+        .offset(offset)
+        .limit(limit)
+        .order_by(EnterPrise.enterprise_id))
+
+    enterprise_db = session.execute(stmt).mappings().all()
+    
+    if not enterprise_db:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='Enterprise Not Found'
+        )
+    
+    data = list()
+
+    for enterprise in enterprise_db:
+        data.append(EnterPriseSchemaPublic(**dict(enterprise)))
+
+    return data
+
 
 @router.get('/{enterprise_id}', response_model=EnterPriseSchemaPublic)
 def get_enterprise_by_id(
@@ -157,3 +218,24 @@ def put_enterprise_by_id(
     data = EnterPriseSchemaPublic(**dict(enterprise_update_db))
 
     return data
+
+@router.delete('/{enterprise_id}', status_code=HTTPStatus.NO_CONTENT)
+def delete_enterprise_by_id(
+    enterprise_id : int, session : Session = Depends(get_session)
+    ):
+    stmt = select(EnterPrise).where(
+        EnterPrise.enterprise_id == enterprise_id
+        )
+    
+    enterprise_db = session.execute(stmt).scalar_one_or_none()
+
+    if not enterprise_db:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail='Enterprise not found'
+        )
+    
+    enterprise_db.deleted_at = datetime.now()
+    enterprise_db.status_id = EnumStatus.DELETADO.value
+    session.commit()
+
