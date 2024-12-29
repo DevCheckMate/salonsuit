@@ -29,8 +29,9 @@ def create_enterprise(
         status_id = body.status_id
     )
 
-    current_enterprise = session.query(EnterPrise).all()
-    for enterprise in current_enterprise:
+    current_enterprises = session.query(EnterPrise).all()
+    
+    for enterprise in current_enterprises:
         if enterprise.cellphone == body.cellphone:
             raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -78,7 +79,7 @@ def create_enterprise(
 def list_enterprises(
     session: Session = Depends(get_session),
     page : int = Query(default=1, ge=1, description="Número da página (começando de 1)"),
-    status: int = Query(default=1, description="Aceita 1 e 2"),
+    status: int = Query(default=1, description="1(ativo), 2(inativo)"),
     city : str = Query(default=None, description="Cidade"),
     state : str = Query(default=None, description="Estado")
 ):
@@ -163,6 +164,7 @@ def get_enterprise_by_id(
             status_code=HTTPStatus.NOT_FOUND,
             detail='enterprise not found'
         )
+    
     data = EnterPriseSchemaPublic(**dict(enterprise_db))
 
     return data
@@ -172,9 +174,11 @@ def put_enterprise_by_id(
     enterprise_id: int, body: EnterPriseCreatSchema, 
     session: Session = Depends(get_session)
 ):
-    stmt = select(EnterPrise).where(EnterPrise.enterprise_id == enterprise_id,
-                                    EnterPrise.status_id != EnumStatus.DELETADO.value
+    stmt = select(EnterPrise).where(
+        EnterPrise.enterprise_id == enterprise_id,
+        EnterPrise.status_id != EnumStatus.DELETADO.value
                                     )
+    
     enterprise_db = session.execute(stmt).scalar_one_or_none()
 
     if not enterprise_db:
@@ -238,4 +242,3 @@ def delete_enterprise_by_id(
     enterprise_db.deleted_at = datetime.now()
     enterprise_db.status_id = EnumStatus.DELETADO.value
     session.commit()
-
