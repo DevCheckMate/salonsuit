@@ -1,9 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from salonsuite.database.db_connection import get_session
@@ -19,6 +19,39 @@ router = APIRouter()
 def create_user(
     body: UsersCreateSchema, session: Session = Depends(get_session)
 ):
+    stmt = select(Users).where(
+        or_(
+            Users.email == body.email,
+            Users.cellphone == body.cellphone,
+            Users.pin == body.pin,
+            Users.instagram == body.instagram,
+        )
+    )
+
+    existing_user = session.execute(stmt).scalar_one_or_none()
+
+    if existing_user:
+        if existing_user.email == body.email:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este e-mail.',
+            )
+        if existing_user.cellphone == body.cellphone:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este Telefone.',
+            )
+        if existing_user.pin == body.pin:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este Pin(CPF).',
+            )
+        if existing_user.instagram == body.instagram:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este Instagram.',
+            )
+
     new_user = Users(
         image_url=body.image_url,
         email=body.email,
@@ -218,6 +251,40 @@ def put_user_by_id(
             status_code=HTTPStatus.NOT_FOUND, detail='User Not Found'
         )
 
+    stmt = select(Users).where(
+        or_(
+            Users.email == body.email,
+            Users.cellphone == body.cellphone,
+            Users.pin == body.pin,
+            Users.instagram == body.instagram,
+        ),
+        Users.users_id != user_id,
+    )
+
+    existing_user = session.execute(stmt).scalar_one_or_none()
+
+    if existing_user:
+        if existing_user.email == body.email:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este e-mail.',
+            )
+        if existing_user.cellphone == body.cellphone:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este Telefone.',
+            )
+        if existing_user.pin == body.pin:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este Pin(CPF).',
+            )
+        if existing_user.instagram == body.instagram:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Já existe um usuário com este Instagram.',
+            )
+
     user_db.image_url = body.image_url
     user_db.email = body.email
     user_db.name = body.name
@@ -259,3 +326,18 @@ def put_user_by_id(
     data = UsersSchemaPublic(**dict(user_update_db))
 
     return data
+
+
+@router.delete('/{user_id}', status_code=HTTPStatus.NO_CONTENT)
+def delete_user_by_id(user_id: int, session: Session = Depends(get_session)):
+    stmt = select(Users).where(Users.users_id == user_id)
+    user_db = session.execute(stmt).scalar_one_or_none()
+
+    if not user_db:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='User Not Found'
+        )
+
+    user_db.deleted_at = datetime.now()
+
+    session.commit()
