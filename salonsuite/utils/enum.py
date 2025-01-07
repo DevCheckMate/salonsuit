@@ -10,5 +10,6 @@ class Status(Enum):
 class UserStatus(Enum):
     ATIVO = 1
     INATIVO = 2
-    DEMITIDO = 3
+    DELETADO = 3
     FERIAS = 4
+    DEMITIDO = 5

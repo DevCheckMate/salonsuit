@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from http import HTTPStatus
 from typing import List
 
@@ -11,6 +11,7 @@ from salonsuite.models.user_group import UserGroup
 from salonsuite.models.user_status import UserStatus
 from salonsuite.models.users import Users
 from salonsuite.schemas.users import UsersCreateSchema, UsersSchemaPublic
+from salonsuite.utils.enum import UserStatus as EnumUserStatus
 
 router = APIRouter()
 
@@ -104,23 +105,11 @@ def list_users(
     page: int = Query(
         default=1, ge=1, description='Número da pagina (começando de 1)'
     ),
-    image_url: str = Query(default=None, description='Imagem do Usuário'),
     email: str = Query(default=None, description='Email do usuário'),
     name: str = Query(default=None, description='Nome do Usuário'),
-    group_id: int = Query(default=None, description='Aceita 1, 2, 3, 4 e 5'),
     group_name: str = Query(
         default=None, description='Nome do Grupo do usuário'
     ),
-    cellphone: str = Query(default=None, description='Telefone do Usuário'),
-    pin: str = Query(default=None, description='CPF do Usuário'),
-    password: str = Query(default=None, description='Senha do Usuário'),
-    birthdate: date = Query(
-        default=None, description='Data de Aniversario do Usuário'
-    ),
-    instagram: str = Query(default=None, description='Instagram do Usuário'),
-    gender: str = Query(default=None, description='Gênero do Usuário'),
-    description: str = Query(default=None, description='Descrição do Usuário'),
-    status_id: int = Query(default=None, description='Aceita 1, 2, 3 e 4'),
     status_name: str = Query(
         default=None, description='Nome do Status do Usuário'
     ),
@@ -154,36 +143,21 @@ def list_users(
         .join(UserStatus, Users.status_id == UserStatus.user_status_id)
     )
 
-    if image_url:
-        stmt = stmt.where(Users.image_url == image_url)
     if email:
         stmt = stmt.where(Users.email == email)
     if name:
         stmt = stmt.where(Users.name == name)
-    if group_id:
-        stmt = stmt.where(Users.group_id == group_id)
     if group_name:
         stmt = stmt.where(UserGroup.name == group_name)
-    if cellphone:
-        stmt = stmt.where(Users.cellphone == cellphone)
-    if pin:
-        stmt = stmt.where(Users.pin == pin)
-    if password:
-        stmt = stmt.where(Users.password == password)
-    if birthdate:
-        stmt = stmt.where(Users.birthdate == birthdate)
-    if instagram:
-        stmt = stmt.where(Users.instagram == instagram)
-    if gender:
-        stmt = stmt.where(Users.gender == gender)
-    if description:
-        stmt = stmt.where(Users.description == description)
-    if status_id:
-        stmt = stmt.where(Users.status_id == status_id)
     if status_name:
         stmt = stmt.where(UserStatus.name == status_name)
 
-    stmt = stmt.offset(offset).limit(limit).order_by(Users.users_id)
+    stmt = (
+        stmt.where(Users.status_id != EnumUserStatus.DELETADO.value)
+        .offset(offset)
+        .limit(limit)
+        .order_by(Users.users_id)
+    )
 
     users_db = session.execute(stmt).mappings().all()
 
@@ -242,7 +216,10 @@ def put_user_by_id(
     body: UsersCreateSchema,
     session: Session = Depends(get_session),
 ):
-    stmt = select(Users).where(Users.users_id == user_id)
+    stmt = select(Users).where(
+        Users.users_id == user_id,
+        Users.status_id != EnumUserStatus.DELETADO.value,
+    )
 
     user_db = session.execute(stmt).scalar_one_or_none()
 
@@ -339,5 +316,5 @@ def delete_user_by_id(user_id: int, session: Session = Depends(get_session)):
         )
 
     user_db.deleted_at = datetime.now()
-
+    user_db.status_id = EnumUserStatus.DELETADO.value
     session.commit()

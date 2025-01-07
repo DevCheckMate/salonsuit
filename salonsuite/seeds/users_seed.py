@@ -34,7 +34,7 @@ def seed_user():
                 instagram=None,
                 gender='Male',
                 description='Segundo usuario criado',
-                status_id=3,
+                status_id=4,
             ),
             Users(
                 image_url='https://example.com/image2.jpg',
