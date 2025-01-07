@@ -79,9 +79,9 @@ def create_enterprise(
 def list_enterprises(
     session: Session = Depends(get_session),
     page : int = Query(default=1, ge=1, description="Número da página (começando de 1)"),
-    status: int = Query(default=1, description="1(ativo), 2(inativo)"),
-    city : str = Query(default=None, description="Cidade"),
-    state : str = Query(default=None, description="Estado")
+    name : str = Query(default=None, description="Nome da empresa"),
+    cnpj : str = Query(default=None, description="Cnpj da empresa"),
+    status_name : str = Query(default=None, description="Nome do status da empresa")
 ):
     if page <= 0:
         page = 1
@@ -106,12 +106,12 @@ def list_enterprises(
         )
     )
 
-    if status:
-        stmt = stmt.where(EnterPrise.status_id == status)
-    if city:
-        stmt = stmt.where(EnterPrise.city == city)
-    if state:
-        stmt = stmt.where(EnterPrise.state == state)
+    if name:
+        stmt = stmt.where(EnterPrise.name == name)
+    if cnpj:
+        stmt = stmt.where(EnterPrise.cnpj == cnpj)
+    if status_name:
+        stmt = stmt.where(Status.name == status_name)
 
     stmt = (
         stmt.where(EnterPrise.status_id != EnumStatus.DELETADO.value)
@@ -184,6 +184,25 @@ def put_enterprise_by_id(
     if not enterprise_db:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='Enterprise Not Found'
+        )
+
+    current_enterprises = session.query(EnterPrise).all()
+    
+    for enterprise in current_enterprises:
+        if enterprise.cellphone == body.cellphone:
+            raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='cellphone already exist'
+        )
+        if enterprise.cnpj == body.cnpj:
+            raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='cnpj already exist'
+        )
+        if enterprise.email == body.email:
+            raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Email already exist'
         )
 
     enterprise_db.name = body.name
