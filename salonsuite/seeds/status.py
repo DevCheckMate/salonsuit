@@ -6,7 +6,11 @@ from salonsuite.models.status import Status
 
 def seed_status():
     with Session(engine) as session:
-        status = [Status(name='ATIVO'), Status(name='INATIVO'), Status(name='DELETADO')]
+        status = [
+            Status(name='ATIVO'),
+            Status(name='INATIVO'),
+            Status(name='DELETADO'),
+        ]
         session.add_all(status)
         session.commit()
     ...
